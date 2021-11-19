@@ -1,6 +1,5 @@
 package model
 
 type Point interface {
-	GetX() uint32
-	GetY() uint32
+	GetXY() (uint32, uint32)
 }
