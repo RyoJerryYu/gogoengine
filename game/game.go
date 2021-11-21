@@ -15,6 +15,7 @@ type Game interface {
 	GetTurnPlayer() model.Player
 	GetBoard() model.Board
 	GetNewBoardWithSameSize() model.Board
+	GetNewIntPoolWithBoardSize(int) [][]int
 	GetPassedPlayers() []model.Player
 	GetPlayerMapByStoneType() map[model.StoneType]model.Player
 }
@@ -85,6 +86,19 @@ func (g game) GetNewBoardWithSameSize() model.Board {
 	)
 }
 
+func (g game) GetNewIntPoolWithBoardSize(initValue int) [][]int {
+	x, y := g.board.Size()
+	res := make([][]int, 0, x)
+	for xi := uint32(0); xi < x; xi++ {
+		line := make([]int, 0, y)
+		for yi := uint32(0); yi < y; yi++ {
+			line = append(line, initValue)
+		}
+		res = append(res, line)
+	}
+	return res
+}
+
 func (g game) GetPassedPlayers() []model.Player {
 	passedPlayers := make([]model.Player, 0, len(g.playerSet))
 	for _, pl := range g.playerSet {
@@ -101,4 +115,38 @@ func (g game) GetPlayerMapByStoneType() map[model.StoneType]model.Player {
 		playerMap[pl.GetStoneType()] = pl
 	}
 	return playerMap
+}
+
+type gameOption func(*game)
+type gameChecker func(*game) error
+
+func NewGame(
+	opts ...gameOption,
+) (Game, error) {
+	g := &game{}
+	for _, opt := range opts {
+		opt(g)
+	}
+
+	if err := runChecker(g); err != nil {
+		return nil, err
+	}
+
+	g.turnOf = 0
+
+	return g, nil
+}
+
+func runChecker(g *game) error {
+	checkerChain := []gameChecker{
+		checkNotInitialized,
+		checkMoreThanOnePlayer,
+	}
+
+	for _, checker := range checkerChain {
+		if err := checker(g); err != nil {
+			return err
+		}
+	}
+	return nil
 }
