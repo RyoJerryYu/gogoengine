@@ -25,3 +25,11 @@ func (p player) GetStoneType() StoneType {
 func (p player) GetTag() string {
 	return p.tag
 }
+
+func NewPlayer(stoneType StoneType, tag string) Player {
+	return player{
+		stoneType: stoneType,
+		passed:    false,
+		tag:       tag,
+	}
+}

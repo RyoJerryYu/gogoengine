@@ -14,3 +14,7 @@ var _ Point = (*point)(nil)
 func (p point) GetXY() (x, y uint32) {
 	return p.x, p.y
 }
+
+func NewPoint(x, y uint32) Point {
+	return point{x, y}
+}
