@@ -41,7 +41,7 @@ func (ui *userInterface) renderCell(
 ) string {
 	// render stone
 	if stone != model.StoneType_Empty {
-		if cell, ok := ui.stoneCellMap[stone]; ok {
+		if cell, ok := ui.renderMap[stone]; ok {
 			return cell
 		}
 	}
