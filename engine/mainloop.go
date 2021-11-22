@@ -34,7 +34,13 @@ func (e engine) nextTurn() (model.Player, bool) {
 func (e engine) displayPreTurn(turnPlayer model.Player) {
 	board := e.game.GetBoard()
 	passedPlayers := e.game.GetPassedPlayers()
-	e.ui.PrintBoard(board)
+	for {
+		err := e.ui.PrintBoard(board)
+		if err != nil {
+			continue
+		}
+		break
+	}
 	e.ui.PrintPlayerMessages(turnPlayer, passedPlayers)
 }
 
