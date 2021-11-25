@@ -53,3 +53,30 @@ func TestGame(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, g)
 }
+
+func TestGame_Methods(t *testing.T) {
+	var (
+		g   Game
+		err error
+	)
+
+	g, err = NewGame(
+		WithPlayers([]model.Player{
+			model.NewPlayer(model.StoneType_Empty, "player1"),
+			model.NewPlayer(model.StoneType_Empty, "player2"),
+		}),
+		WithSize(1, 1),
+		WithCleanUp(emptyCleanUp),
+		WithInitialize(emptyInitialize),
+		WithMainPhase(emptyMainPhase),
+	)
+	require.NoError(t, err)
+	assert.NotNil(t, g)
+
+	err = g.Initialize()
+	require.NoError(t, err)
+	err = g.CleanUp()
+	require.NoError(t, err)
+	err = g.ProcessPlaceOn(model.NewPoint(0, 0))
+	require.NoError(t, err)
+}
