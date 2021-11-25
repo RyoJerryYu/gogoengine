@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/RyoJerryYu/gogoengine/model"
@@ -56,8 +57,10 @@ func TestGame(t *testing.T) {
 
 func TestGame_Methods(t *testing.T) {
 	var (
-		g   Game
-		err error
+		g        Game
+		err      error
+		errInit  = fmt.Errorf("initialize error")
+		errClean = fmt.Errorf("cleanup error")
 	)
 
 	g, err = NewGame(
@@ -66,17 +69,15 @@ func TestGame_Methods(t *testing.T) {
 			model.NewPlayer(model.StoneType_Empty, "player2"),
 		}),
 		WithSize(1, 1),
-		WithCleanUp(emptyCleanUp),
-		WithInitialize(emptyInitialize),
+		WithCleanUp(func(g *game) error { return errClean }),
+		WithInitialize(func(g *game) error { return errInit }),
 		WithMainPhase(emptyMainPhase),
 	)
 	require.NoError(t, err)
 	assert.NotNil(t, g)
 
 	err = g.Initialize()
-	require.NoError(t, err)
+	require.ErrorIs(t, err, errInit)
 	err = g.CleanUp()
-	require.NoError(t, err)
-	err = g.ProcessPlaceOn(model.NewPoint(0, 0))
-	require.NoError(t, err)
+	require.ErrorIs(t, err, errClean)
 }
